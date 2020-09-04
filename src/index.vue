@@ -1,13 +1,18 @@
 <template>
-    <div class="container">
-        <img
-            v-for="(img,i) of imgList"
-            :style="{width:`${totalWidth}px`,height:`${img.height*(totalWidth/img.width)}px`,left:`${img.left}px`,position:`${img.position}`,top:`${img.top}px`}"
-            :key="i"
-            :src='img.src'
-            :data-src=img.url
-            class="img"
-        />
+    <div>
+        <div class="container">
+            <img
+                v-for="(img,i) of imgList"
+                :style="{width:`${totalWidth}px`,height:`${img.height*(totalWidth/img.width)}px`,left:`${img.left}px`,position:`${img.position}`,top:`${img.top}px`}"
+                :key="i"
+                :src='img.src'
+                :data-src=img.url
+                class="img"
+            />
+        </div>
+        <div class="loading" v-show='loading'>正在加载中...</div>
+        <div class="loading" v-show='none'>已经到底了</div>
+
     </div>
 </template>
 
@@ -17,6 +22,7 @@ export default {
     components: {},
     data() {
         return {
+            loading: false,
             list: [
                 'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1598592567823&di=db6ec46d9060c578ed3e4a75f6d62e25&imgtype=0&src=http%3A%2F%2Fb.zol-img.com.cn%2Fdesk%2Fbizhi%2Fstart%2F3%2F1368001350225.jpg',
                 'https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=350409649,190622771&fm=26&gp=0.jpg',
@@ -139,6 +145,7 @@ export default {
             size: 0,
             padding: 10,
             first: true,
+            none:false,
         }
     },
     created() {
@@ -159,8 +166,9 @@ export default {
                 self.imgList = res
             })
         })
-        window.addEventListener('scroll', function reset() {
-            let scrollTop =
+        window.addEventListener('scroll', async function reset() {
+            if(self.loading==false){
+                   let scrollTop =
                 document.documentElement.scrollTop || document.body.scrollTop
             let clientHeight =
                 document.documentElement.clientHeight ||
@@ -173,13 +181,13 @@ export default {
                 scrollHeight > clientHeight &&
                 scrollTop + clientHeight === scrollHeight
             ) {
-                self.loadmore()
-            }
-            self.totalWidth =
-                (document.body.clientWidth - self.padding * self.row) / self.row
+                await self.loadmore()
+            } else self.totalWidth = (document.body.clientWidth - self.padding * self.row) / self.row
             self.setWaterfall(self.list).then((res) => {
                 self.imgList = res
             })
+            }
+         
         })
     },
     methods: {
@@ -210,19 +218,35 @@ export default {
             return this.imgList
         },
         loadmore() {
-            for (let j = 0; j < this.other.length; j++) {
-                this.imgList.push({
-                    url: this.other[j],
-                    height: 0,
-                    width: 0,
-                    position: 'relative',
-                    left: (j + 1) * this.padding,
-                    top: 0,
-                    flag: false,
-                    src: null,
-                })
-            }
-            this.other=[]
+            return new Promise((resolve) => {
+                let self = this
+                self.loading = true
+                setTimeout(function () {
+                    if(self.other.length == 0){
+                        resolve()
+                        self.loading = false
+                        self.none = true
+
+                    }else{
+                          for (let j = 0; j < self.other.length; j++) {
+                        self.imgList.push({
+                            url: self.other[j],
+                            height: 0,
+                            width: 0,
+                            position: 'relative',
+                            left: (j + 1) * self.padding,
+                            top: 0,
+                            flag: false,
+                            src: null,
+                        })
+                    }
+                    self.other = []
+                    self.loading = false
+                    resolve()
+                    }
+                  
+                }, 3000)
+            })
         },
         async setPosition(list) {
             let heights = []
@@ -246,7 +270,6 @@ export default {
             let currClient =
                 document.documentElement.scrollTop +
                 document.documentElement.clientHeight
-            console.log(document.documentElement.clientHeight)
             for (let i = this.row; i < list.length; i++) {
                 if (
                     maxHeight > heights[index][0] &&
@@ -268,7 +291,6 @@ export default {
                     index = this.getMinHeight(heights)
                 }
             }
-            console.log(heights)
             console.log(this.getMaxHeight(heights))
             document.getElementsByClassName(
                 'container'
