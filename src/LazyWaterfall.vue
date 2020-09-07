@@ -275,7 +275,7 @@ export default {
     height: 10px;
     margin: 0 auto;
     margin-top: 10px;
-    margin-top: 10px;
+    margin-bottom: 10px;
 }
 .loading span {
     display: inline-block;
