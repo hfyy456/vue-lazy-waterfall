@@ -1,24 +1,49 @@
-# vue-lazy-waterfall
-
-## Project setup
+## Install
+```shell
+npm i vue-waterfall-lazyload -S
 ```
-npm install
+## Quick Start
+``` javascript
+import Vue from 'vue'
+import LazyWaterfall from 'vue-waterfall-lazyload/lib/lazyWaterfall'
+Vue.use(LazyWaterfall)
 ```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
+## SSR/Nuxt Start
+nuxt.config.js
+``` javascript
+    { src: '@/plugins/no-ssr', ssr: false },
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+plugins/no-ssr
+
+```javascript
+import Vue from 'vue'
+import LazyWaterfall from 'vue-waterfall-lazyload/lib/lazyWaterfall'
+Vue.use(LazyWaterfall)
+<client-only>
+    <LazyWaterfall />
+</client-only>
+```
+## How to use
+
+#### Attributes
+
+|   参数   |       说明       |   类型   | 默认值 |
+| :------: | :--------------: | :------: | :----: |
+|   list   |   首屏图片列表   |  Array   |   /    |
+|   row    | 每行显示图片个数 |  Number  |   5    |
+| padding  |   图片之间间距   |  Number  |   10   |
+| loadData |     加载函数     | Function |   /    |
+
+#### loadData
+
+```javascript
+loadData() {
+            return new Promise((reslove) => {
+                setTimeout(function () {
+                    reslove([...src])
+                }, 3000)
+            })
+        },
+```
+

@@ -44,9 +44,9 @@ export default {
             type: Number,
             default: 10,
         },
-        loadData:{
-            type:Function,
-        }
+        loadData: {
+            type: Function,
+        },
     },
     data() {
         return {
@@ -56,7 +56,7 @@ export default {
             size: 0,
             first: true,
             none: false,
-            other:[],
+            other: [],
         }
     },
     created() {
@@ -133,8 +133,8 @@ export default {
             return new Promise((resolve) => {
                 let self = this
                 self.loading = true
-                self.loadData().then(res=>{
-                       if (res.length == 0) {
+                self.loadData().then((res) => {
+                    if (res.length == 0) {
                         self.loading = false
                         self.none = true
                         window.removeEventListener('scroll', self.reset)
@@ -142,7 +142,7 @@ export default {
                     } else {
                         for (let j = 0; j < res.length; j++) {
                             self.imgList.push({
-                                url:res[j],
+                                url: res[j],
                                 height: 0,
                                 width: 0,
                                 position: 'relative',
@@ -162,7 +162,7 @@ export default {
             let heights = []
 
             for (let i = 0; i < this.row; i++) {
-                [list[i].width, list[i].height] = await this.getSize(
+                ;[list[i].width, list[i].height] = await this.getSize(
                     list[i].url
                 )
                 list[i].src = list[i].url
@@ -186,7 +186,7 @@ export default {
                     currClient > heights[index][0]
                 ) {
                     if (list[i].flag == false) {
-                        [list[i].width, list[i].height] = await this.getSize(
+                        ;[list[i].width, list[i].height] = await this.getSize(
                             list[i].url
                         )
                         list[i].flag = true
@@ -274,6 +274,7 @@ export default {
     width: 150px;
     height: 10px;
     margin: 0 auto;
+    margin-top: 10px;
     margin-top: 10px;
 }
 .loading span {
